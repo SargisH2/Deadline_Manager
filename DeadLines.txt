@@ -1,0 +1,5 @@
+Name[25]_________________|Company[15]____|co/all|[DD.MM]|Description, optional
+####EXAMPLES
+Deadline Manager_________|MyProject______|70/100|__12.01|completed/all_+%
+Deadline Manager2________|MyProject______|60/100|__10.06|need to fix
+Deadline Manager3________|MyProject______|34/100|__05.10|completed/all_+%

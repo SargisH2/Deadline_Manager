@@ -1,0 +1,3 @@
+Name[25]_________________|Company[15]____|Compl/All[C/C16]|DeadLine[DD.MM]|Description(optional)
+Example Name|My Company|65/100|16.08|My example's description
+_____________________________________________________________[65]
