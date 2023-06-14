@@ -1,5 +1,6 @@
 Name[25]_________________|Company[15]____|co/all|[DD.MM]|Description, optional
-####EXAMPLES
-Deadline Manager_________|MyProject______|70/100|__12.01|completed/all_+%
-Deadline Manager2________|MyProject______|60/100|__10.06|need to fix
-Deadline Manager3________|MyProject______|34/100|__05.10|completed/all_+%
+Diskret__________________|YSU____________|6/28|16.06|
+Math.py__________________|My Project_____|1/8|16.06|
+Deadline Manager_________|My Prject______|40/100|27.06|
+Weather App______________|MY Project_____|0/100|12.12|bzbzaliq
+c++______________________|YSU____________|40/100|22.06|OOP pti videonerov nayvi
