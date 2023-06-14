@@ -1,3 +1,4 @@
+#with txt files
 from classes import Task
 
 # line_len=65
@@ -10,8 +11,6 @@ _____________________________________________________________[65]'''
 with open(add_tasks_file, 'r') as file:
     all_lines=file.read().split('\n')
     lines=all_lines[3:]
-with open(add_tasks_file, 'w') as file:
-    file.write(default_txt_add)
 
 def lines_to_tasks(txt: list)->list:
     '''from list of lines to list of Tasks'''
@@ -32,3 +31,5 @@ new_tasks_list=lines_to_tasks(lines)
 with open(old_tasks_file, 'a') as file:
     write_list=map(lambda x:str(x)+'\n', new_tasks_list)
     file.writelines(write_list)
+with open(add_tasks_file, 'w') as file:
+    file.write(default_txt_add)
