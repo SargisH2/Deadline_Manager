@@ -1,22 +1,21 @@
-from PyQt6.QtWidgets import (QWidget, QTableWidget, QVBoxLayout)
+from PyQt6.QtWidgets import (QMainWindow, QTableWidget, QVBoxLayout, QWidget, QPushButton, QLineEdit)
 
 class Task:
     NAME_LEN=25
     COM_LEN=15
-    def __init__(self, name:str=None, company:str=None, dead_time: str=None, percent:int=0, desc:str='') -> None:
-        '''Name[25], Company[15], Compl/All[16], DeadLine[DD.MM]'''
+    def __init__(self, name:str=None, company:str=None, dead_time: str=None, percent:str='0', desc:str='') -> None:
         self._check_all(name, company, percent, dead_time)
         self.__name=name
         self.__desc=desc
         self.__company=company
         self.__dead_time=dead_time
-        self.__percent=percent
+        self.__percent=int(percent)
 
     def __str__(self) -> str:
         return '|'.join(map(str,self.values()))
     
     def values(self) -> list:
-        values_lst = [self.__name, self.__company, self.__percent, self.__dead_time, self.__desc]
+        values_lst = [self.__name, self.__company, str(self.__percent), self.__dead_time, self.__desc]
         return values_lst
     
     @classmethod
@@ -34,10 +33,11 @@ class Task:
         if not (isinstance(company, str) and len(company) <= cls.COM_LEN) and company!=None:
             raise Exception("Invalid company name")
     @staticmethod
-    def _check_percent(percent: int):
+    def _check_percent(percent: str):
         try:
             int(percent)
         except:
+            print(percent)
             raise Exception("invalid percent")
     @staticmethod
     def _check_time(date: str):
@@ -51,15 +51,67 @@ class Task:
                 raise Exception("Invalid deadline")
 
 
-class Window(QWidget):
-    def __init__(self, window_name):
+class MainWindow(QMainWindow):
+    def __init__(self):
         super().__init__()
-        self.setWindowTitle(window_name)
-        self.setMinimumSize(400, 250)
-        self.show()
- 
-    def CreateTable(self, rows, columns):
-        self.table = QTableWidget(rows, columns)
-        self.vBox = QVBoxLayout()
-        self.vBox.addWidget(self.table)
-        self.setLayout(self.vBox)
+        self.setWindowTitle("My Tasks")
+        self.setMinimumSize(550, 250)
+        self.main_layout=QVBoxLayout()
+        self.buttons=dict()
+        
+    def create_table(self, h:int, w:int, head:list):
+        self._head=head
+        table=QTableWidget()
+        table.setRowCount(h)
+        table.setColumnCount(w)
+        table.setHorizontalHeaderLabels(head)
+        self.table=table
+        self.update(table)
+    
+    def add_buttons(self, *buttons):
+        '''(key, button_text) tuples to buttons'''
+        for key, text in buttons:
+            button=QPushButton(text)
+            self.update(button)
+            self.buttons[key]=button
+
+    def update(self, obj):
+        self.main_layout.addWidget(obj)
+        widget = QWidget()
+        widget.setLayout(self.main_layout)
+        self.setCentralWidget(widget)
+
+
+class Window_adding(QWidget):
+    def __init__(self, len, height):
+        super().__init__()
+        self.main_layout = QVBoxLayout()
+        self.buttons=dict()
+        self.setFixedSize(len, height)
+
+    def create_table(self, h:int, w:int, head:list):
+        self._head=head
+        table=QTableWidget()
+        table.setRowCount(h)
+        table.setColumnCount(w)
+        table.setHorizontalHeaderLabels(head)
+        self.table=table
+
+        self.main_layout.addWidget(table)
+        self.setLayout(self.main_layout)
+        
+    def add_buttons(self, *buttons):
+        '''(key, button_text) tuples to buttons'''
+        for key, text in buttons:
+            button=QPushButton(text)
+
+            self.main_layout.addWidget(button)
+            self.setLayout(self.main_layout)
+            self.buttons[key]=button
+
+    def add_input_area(self):
+        input=QLineEdit(self)
+        self.input_area=input
+
+        self.main_layout.addWidget(input)
+        self.setLayout(self.main_layout)

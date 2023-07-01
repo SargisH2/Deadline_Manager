@@ -3,39 +3,84 @@ from PyQt6.QtWidgets import QApplication, QTableWidgetItem
 import pickle
 import sys
 from os.path import isfile
-from Classes import Task, Window
+from Classes import Task, MainWindow, Window_adding
 data_file='data.pickle'
-columns=['Name', 'Company', 'Percent', 'Deadline', 'Description']
+columns=['Name', 'Company', 'Deadline', 'Percent %', 'Description']
 
-if not isfile(data_file):
-    data = Task('taskname', 'company122')
+def add_data(data:list)->None:
     with open(data_file, 'wb') as f:
-        pickle.dump(data, f)
-else:
+        for task in data:
+            pickle.dump(task, f)
+
+def get_data()->list:
     data=[]
     with open(data_file, 'rb') as f:
         while True:
             try:
                 data.append(pickle.load(f))
             except EOFError:
-                break
+                data.sort(reverse=True, key=lambda x:int(x.values()[2]))##### percent ############ edit
+                return data
 
-print(data)########################### del
+def del_data():
+    del_win=window.del_window
+    name=del_win.input_area.text()#////////////////////////////////////////////need to finish
+    print("(not)Deleted!", name)
+    del_win.close()
 
-table_width=len(columns)
+if not isfile(data_file):
+    data = []
+    add_data(data)
+else:
+    data=get_data()
+
 table_height=len(data)
+table_width=len(columns)
 
 app = QApplication([])
-window = Window("Tasks.py")
-window.CreateTable(table_height, table_width)
-table=window.table
-table.setHorizontalHeaderLabels(columns)
-for row, task in enumerate(data):
-    for col, value in enumerate(task.values()):
-        if col==2: value=str(value)+'/100%'
-        table.setItem(row, col, QTableWidgetItem(value))
-        item_width=(80+5*len(value))if isinstance(value, str) else 100
-        table.setColumnWidth(col, item_width)
+window = MainWindow()
+
+def adding_window():
+    window.add_window=Window_adding(550, 200)
+    new_window=window.add_window
+    new_window.create_table(1, table_width, columns)
+    new_window.add_buttons(('save', 'Save'), ('cancel', 'Cancel'))
+    new_window.buttons['cancel'].clicked.connect(lambda: new_window.close())
+    new_window.buttons['save'].clicked.connect(save_item)
+    new_window.show()
+
+
+def save_item():
+    new_task=[]
+    for col in range(table_width):
+        new_task.append(window.add_window.table.item(0,col).text())
+    print(new_task)
+    add_data([Task(*new_task)])
+    window.add_window.close()
+
+def del_window():
+    window.del_window=Window_adding(200, 100)
+    new_window=window.del_window
+    new_window.add_input_area()
+    new_window.add_buttons(('del', 'Delete'), ('cancel', 'Cancel'))
+    new_window.buttons['cancel'].clicked.connect(lambda: new_window.close())
+    new_window.buttons['del'].clicked.connect(del_data)
+    new_window.show()
+
+
+window.create_table(table_height, table_width, columns)
+main_table=window.table
+for index, task in enumerate(data):
+    row=index
+    for col, item in enumerate(task.values()):
+        item=QTableWidgetItem(item)
+        main_table.setItem(row, col, item)
+window.add_buttons(('add', 'Add new task'), ('del', 'Delete task'), ('exit', 'Exit'))
+window.buttons['add'].clicked.connect(adding_window)
+window.buttons['del'].clicked.connect(del_window)
+window.buttons['exit'].clicked.connect(lambda: window.close())
+window.show()
+
 sys.exit(app.exec())
 
 
@@ -44,46 +89,3 @@ sys.exit(app.exec())
 
 
 
-
-
-
-
-
-
-
-
-
-# from classes import Task
-
-# # line_len=65
-# add_tasks_file="AddTask.txt"
-# old_tasks_file="DeadLines.txt"
-
-# default_txt_add='''Name[25]_________________|Company[15]____|Compl/All[C/C16]|DeadLine[DD.MM]|Description(optional)
-# Example Name|My Company|65/100|16.08|My example's description
-# _____________________________________________________________[65]'''
-# with open(add_tasks_file, 'r') as file:
-#     all_lines=file.read().split('\n')
-#     lines=all_lines[3:]
-
-# def lines_to_tasks(txt: list)->list:
-#     '''from list of lines to list of Tasks'''
-#     lst=[]
-#     for make in txt:
-#         make=make.split('|')
-#         name = make[0]
-#         company = make[1]
-#         dead_time = make[3]
-#         completed = make[2].split('/')[0]
-#         all_ = make[2].split('/')[1]
-#         desc = make[4].strip('\n')
-#         lst.append(Task(name, company, dead_time, completed, all_, desc))
-#     return lst
-
-# new_tasks_list=lines_to_tasks(lines)
-
-# with open(old_tasks_file, 'a') as file:
-#     write_list=map(lambda x:str(x)+'\n', new_tasks_list)
-#     file.writelines(write_list)
-# with open(add_tasks_file, 'w') as file:
-#     file.write(default_txt_add)
