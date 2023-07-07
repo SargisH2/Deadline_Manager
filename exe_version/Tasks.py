@@ -19,14 +19,19 @@ def get_data()->list:
             try:
                 data.append(pickle.load(f))
             except EOFError:
-                data.sort(reverse=True, key=lambda x:int(x.values()[2]))##### percent ############ edit
+                data.sort(reverse=True, key=lambda x:int(x.values()[2]))##### percent 
                 return data
 
 def del_data():
     del_win=window.del_window
-    name=del_win.input_area.text()#////////////////////////////////////////////need to finish
-    print("(not)Deleted!", name)
+    name=del_win.input_area.text()
+    for rm_task in data:
+        if rm_task.values()[0]==name:
+            data.remove(rm_task)
+            add_data(data)
+            break
     del_win.close()
+    update_table()
 
 if not isfile(data_file):
     data = []
@@ -37,8 +42,23 @@ else:
 table_height=len(data)
 table_width=len(columns)
 
-app = QApplication([])
-window = MainWindow()
+def update_table():
+    global window, table_height
+    table_height = len(data)
+    window.close()
+    window=MainWindow()
+    window.create_table(table_height, table_width, columns)
+    main_table=window.table
+    for index, task in enumerate(data):
+        row=index
+        for col, item in enumerate(task.values()):
+            item=QTableWidgetItem(item)
+            main_table.setItem(row, col, item)
+    window.add_buttons(('add', 'Add new task'), ('del', 'Delete task'), ('exit', 'Exit'))
+    window.buttons['add'].clicked.connect(adding_window)
+    window.buttons['del'].clicked.connect(del_window)
+    window.buttons['exit'].clicked.connect(lambda: window.close())
+    window.show()
 
 def adding_window():
     window.add_window=Window_adding(550, 200)
@@ -55,8 +75,11 @@ def save_item():
     for col in range(table_width):
         new_task.append(window.add_window.table.item(0,col).text())
     print(new_task)
-    add_data([Task(*new_task)])
+    new_task=Task(*new_task)
+    data.append(new_task)
+    add_data(data)
     window.add_window.close()
+    update_table()
 
 def del_window():
     window.del_window=Window_adding(200, 100)
@@ -67,25 +90,7 @@ def del_window():
     new_window.buttons['del'].clicked.connect(del_data)
     new_window.show()
 
-
-window.create_table(table_height, table_width, columns)
-main_table=window.table
-for index, task in enumerate(data):
-    row=index
-    for col, item in enumerate(task.values()):
-        item=QTableWidgetItem(item)
-        main_table.setItem(row, col, item)
-window.add_buttons(('add', 'Add new task'), ('del', 'Delete task'), ('exit', 'Exit'))
-window.buttons['add'].clicked.connect(adding_window)
-window.buttons['del'].clicked.connect(del_window)
-window.buttons['exit'].clicked.connect(lambda: window.close())
-window.show()
-
+app = QApplication([])
+window = MainWindow()
+update_table()
 sys.exit(app.exec())
-
-
-
-
-
-
-
