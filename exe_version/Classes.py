@@ -115,3 +115,4 @@ class Window_adding(QWidget):
 
         self.main_layout.addWidget(input)
         self.setLayout(self.main_layout)
+        
